@@ -29,17 +29,16 @@ public class Imaghur {
     }
 
     public static void analyzeImage(String inputFilePath, String outputFilePath, boolean sortDescending) throws IOException {
-        // Load input image
+        // Load input image using the absolute path of the image
         logger.info("The image we were given and will use: {}\n", inputFilePath);
         BufferedImage inputImage = ImageIO.read(new File(inputFilePath));
-        int imageWidth = inputImage.getWidth();
-        int imageHeight = inputImage.getHeight();
 
         // Initialize data structures
         Map<Color, Integer> colorCounts = new HashMap<>();
+        int imageWidth = inputImage.getWidth();
+        int imageHeight = inputImage.getHeight();
 
         // Analyze input image and count colors
-        // TODO: Fix this counter as we are identifying way too many colors in our input image
         logger.info("Identify how many colors we find in our input image.\n");
         for (int y = 0; y < imageHeight; y++) {
             for (int x = 0; x < imageWidth; x++) {
