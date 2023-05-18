@@ -12,13 +12,14 @@ import org.slf4j.LoggerFactory;
 
 
 public class Imaghur {
+    protected static final Config properties = new Config(System.getProperty("prop.file", "src/main/resources/config.properties"));
     private static final Logger logger = LoggerFactory.getLogger(Imaghur.class);
     protected static ArrayList<Point> pixelTracker;
 
     public static void main(String[] args) {
-        String inputFilePath = "src/main/resources/input.png";
-        String outputFilePath = "src/main/resources/output.png";
-        boolean sortDescending = true;
+        String inputFilePath = properties.getProperty("input.image");
+        String outputFilePath = properties.getProperty("output.image");
+        boolean sortDescending = Boolean.parseBoolean(properties.getProperty("descending"));
         pixelTracker = new ArrayList<>();
         try {
             analyzeImage(inputFilePath, outputFilePath, sortDescending);
@@ -42,11 +43,11 @@ public class Imaghur {
         logger.info("Identify how many colors we find in our input image.\n");
         for (int y = 0; y < imageHeight; y++) {
             for (int x = 0; x < imageWidth; x++) {
-                Color pixelColor = new Color(inputImage.getRGB(x, y));
-                if (!colorCounts.containsKey(pixelColor)) {
-                    colorCounts.put(pixelColor, 1);
+                Color temperedPixelColor = reduceColors(new Color(inputImage.getRGB(x, y)));
+                if (!colorCounts.containsKey(temperedPixelColor)) {
+                    colorCounts.put(temperedPixelColor, 1);
                 } else {
-                    colorCounts.put(pixelColor, colorCounts.get(pixelColor) + 1);
+                    colorCounts.put(temperedPixelColor, colorCounts.get(temperedPixelColor) + 1);
                 }
             }
         }
@@ -56,9 +57,6 @@ public class Imaghur {
         logger.info("Sort colors in descending or ascending order by pixel count.\n");
         List<Map.Entry<Color, Integer>> sortedColors = new ArrayList<>(colorCounts.entrySet());
         sortedColors.sort(sortDescending ? Map.Entry.comparingByValue(Comparator.reverseOrder()) : Map.Entry.comparingByValue());
-        // TODO: If we fix the color counter above, then we no longer need to sublist
-        // Make list of colors much more reasonable a task of sorting through by limiting the number of colors we process
-        sortedColors.subList(0, Math.min(sortedColors.size(), 20));
 
         // Create output image
         logger.info("Create new image file for output.\n");
@@ -179,6 +177,17 @@ public class Imaghur {
         }
         logger.info("We reached a blob radius of {} pixels.\n", neighbourDistance);
         return pixelNeighbors;
+    }
+
+    public static Color reduceColors(Color foundColor) {
+        // NOTE: ONLY uses values 0, 51, 102, 153, 204, 255 for red, green, blue
+        // Create RGB values to store updated RGB values
+        int r = (((foundColor.getRed() * 6) / 256) * 51);
+        int g = (((foundColor.getGreen() * 6) / 256) * 51);
+        int b = (((foundColor.getBlue() * 6) / 256) * 51);
+
+        // Create color variable containing reduced colors
+        return new Color(r,g,b);
     }
 }
 
