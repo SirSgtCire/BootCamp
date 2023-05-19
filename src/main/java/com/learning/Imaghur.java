@@ -1,12 +1,11 @@
 package com.learning;
 
-import java.awt.*;
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.awt.*;
 import java.util.*;
 import java.util.List;
-import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,23 +16,21 @@ public class Imaghur {
     protected static ArrayList<Point> pixelTracker;
 
     public static void main(String[] args) {
-        String inputFilePath = properties.getProperty("input.image");
-        String outputFilePath = properties.getProperty("output.image");
-        boolean sortDescending = Boolean.parseBoolean(properties.getProperty("descending"));
+        String inputFilePath = "src/main/resources/input.png";
+        String outputFilePath = "src/main/resources/output.png";
+        boolean sortDescending = true;
         pixelTracker = new ArrayList<>();
         try {
             analyzeImage(inputFilePath, outputFilePath, sortDescending);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void analyzeImage(String inputFilePath, String outputFilePath, boolean sortDescending) throws IOException {
-        // Load input image using the absolute path of the image
-        logger.info("The image we were given and will use: {}\n", inputFilePath);
-        BufferedImage inputImage = ImageIO.read(new File(inputFilePath));
-
+    public static void analyzeImage(String inputFile, String outputFile, boolean sortDescending) throws Exception {
         // Initialize data structures
+        logger.info("The image we were given and will analyze: {}\n", inputFile);
+        BufferedImage inputImage = ImageIO.read(new File(inputFile));
         Map<Color, Integer> colorCounts = new HashMap<>();
         int imageWidth = inputImage.getWidth();
         int imageHeight = inputImage.getHeight();
@@ -79,10 +76,10 @@ public class Imaghur {
             }
         }
 
-        // Save output image
-        logger.info("Save generated image to {}.\n", outputFilePath);
-        File outputFile = new File(outputFilePath);
-        ImageIO.write(outputImage, "png", outputFile);
+        // Save output image, since we are creating Art
+        logger.info("Save generated image to {}.\n", outputFile);
+        File Art = new File(outputFile);
+        ImageIO.write(outputImage, "png", Art);
     }
 
     public static ArrayList<Point> gatherPixelNeighbors(Integer threshold, BufferedImage imageTemplate) {
