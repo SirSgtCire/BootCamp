@@ -1,17 +1,17 @@
 package com.learning;
 
-import java.awt.*;
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.awt.*;
 import java.util.*;
 import java.util.List;
-import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
 public class Imaghur {
+    protected static final Config properties = new Config(System.getProperty("prop.file", "src/main/resources/config.properties"));
     private static final Logger logger = LoggerFactory.getLogger(Imaghur.class);
     protected static ArrayList<Point> pixelTracker;
 
@@ -22,31 +22,28 @@ public class Imaghur {
         pixelTracker = new ArrayList<>();
         try {
             analyzeImage(inputFilePath, outputFilePath, sortDescending);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static void analyzeImage(String inputFilePath, String outputFilePath, boolean sortDescending) throws IOException {
-        // Load input image
-        logger.info("The image we were given and will use: {}\n", inputFilePath);
-        BufferedImage inputImage = ImageIO.read(new File(inputFilePath));
+    public static void analyzeImage(String inputFile, String outputFile, boolean sortDescending) throws Exception {
+        // Initialize data structures
+        logger.info("The image we were given and will analyze: {}\n", inputFile);
+        BufferedImage inputImage = ImageIO.read(new File(inputFile));
+        Map<Color, Integer> colorCounts = new HashMap<>();
         int imageWidth = inputImage.getWidth();
         int imageHeight = inputImage.getHeight();
 
-        // Initialize data structures
-        Map<Color, Integer> colorCounts = new HashMap<>();
-
         // Analyze input image and count colors
-        // TODO: Fix this counter as we are identifying way too many colors in our input image
         logger.info("Identify how many colors we find in our input image.\n");
         for (int y = 0; y < imageHeight; y++) {
             for (int x = 0; x < imageWidth; x++) {
-                Color pixelColor = new Color(inputImage.getRGB(x, y));
-                if (!colorCounts.containsKey(pixelColor)) {
-                    colorCounts.put(pixelColor, 1);
+                Color temperedPixelColor = reduceColors(new Color(inputImage.getRGB(x, y)));
+                if (!colorCounts.containsKey(temperedPixelColor)) {
+                    colorCounts.put(temperedPixelColor, 1);
                 } else {
-                    colorCounts.put(pixelColor, colorCounts.get(pixelColor) + 1);
+                    colorCounts.put(temperedPixelColor, colorCounts.get(temperedPixelColor) + 1);
                 }
             }
         }
@@ -56,9 +53,6 @@ public class Imaghur {
         logger.info("Sort colors in descending or ascending order by pixel count.\n");
         List<Map.Entry<Color, Integer>> sortedColors = new ArrayList<>(colorCounts.entrySet());
         sortedColors.sort(sortDescending ? Map.Entry.comparingByValue(Comparator.reverseOrder()) : Map.Entry.comparingByValue());
-        // TODO: If we fix the color counter above, then we no longer need to sublist
-        // Make list of colors much more reasonable a task of sorting through by limiting the number of colors we process
-        sortedColors.subList(0, Math.min(sortedColors.size(), 20));
 
         // Create output image
         logger.info("Create new image file for output.\n");
@@ -82,10 +76,10 @@ public class Imaghur {
             }
         }
 
-        // Save output image
-        logger.info("Save generated image to {}.\n", outputFilePath);
-        File outputFile = new File(outputFilePath);
-        ImageIO.write(outputImage, "png", outputFile);
+        // Save output image, since we are creating Art
+        logger.info("Save generated image to {}.\n", outputFile);
+        File Art = new File(outputFile);
+        ImageIO.write(outputImage, "png", Art);
     }
 
     public static ArrayList<Point> gatherPixelNeighbors(Integer threshold, BufferedImage imageTemplate) {
@@ -179,6 +173,17 @@ public class Imaghur {
         }
         logger.info("We reached a blob radius of {} pixels.\n", neighbourDistance);
         return pixelNeighbors;
+    }
+
+    public static Color reduceColors(Color foundColor) {
+        // NOTE: ONLY uses values 0, 51, 102, 153, 204, 255 for red, green, blue
+        // Create RGB values to store updated RGB values
+        int r = (((foundColor.getRed() * 6) / 256) * 51);
+        int g = (((foundColor.getGreen() * 6) / 256) * 51);
+        int b = (((foundColor.getBlue() * 6) / 256) * 51);
+
+        // Create color variable containing reduced colors
+        return new Color(r,g,b);
     }
 }
 
