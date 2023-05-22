@@ -3,6 +3,12 @@ package com.learning;
 import org.openqa.selenium.*;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
     public static void main(String[] args) {
@@ -19,6 +25,9 @@ public class Main {
         WebDriver driver = WebDriverManager.chromedriver().capabilities(
                 new ChromeOptions().addArguments("--remote-allow-origins=*")).create();
 
+        // Configuration to smooth out issues with website testing
+        driver.manage().window().maximize();
+
         // Navigate to google home and grab title of page
         // TODO: parameterize url
         driver.get("https://www.google.com");
@@ -33,7 +42,7 @@ public class Main {
         }
 
         /**
-         *  DAY 3: navigating webpages
+         *  DAY 3: search Yahoo
          */
         // Find Google search box by id
         // TODO: Parameterize element id
@@ -58,7 +67,7 @@ public class Main {
             System.out.format("We failed, darn, here's what we got: %s\n", yahooSearch);
         }
 
-        // Reset the browser by regetting Google
+        // Reset the browser by re-getting Google
         // TODO: parameterize url
         driver.get("https://www.google.com");
         String returnTitle = driver.getTitle();
@@ -75,7 +84,7 @@ public class Main {
         // TODO: Parameterize xpath variable
         WebElement ohElement = driver.findElement(By.xpath("//textarea[@id='APjFqb']"));
 
-        // Replace above sendKeys functions using Javascript executor
+        // Replace sendKeys functions using Javascript executor
         JavascriptExecutor js = (JavascriptExecutor)driver;
         js.executeScript("document.getElementById('APjFqb').value='Yahoo';");
 
@@ -92,6 +101,21 @@ public class Main {
             System.out.format("We passed AGAIN, yay!, just to be sure: %s\n", yahooSearch2);
         } else {
             System.out.format("We failed AGAIN, darn, here's what we got: %s\n", yahooSearch2);
+        }
+
+        /**
+         *  Day 4: navigate webpages
+         */
+        // TODO: parameterize url
+        driver.get(" https://sqeautomation.wordpress.com/sample-html-page/");
+        String testTitle = driver.getTitle();
+
+        // If we actually navigated to our test page, then the title should be ""
+        // TODO: parameterize checks
+        if (testTitle.contains("Sample HTML Page – SQEAutomation")) {
+            System.out.format("We passed, yay!, just to be sure: %s\n", testTitle);
+        } else {
+            System.out.format("We failed, darn, here's what we got: %s\n", testTitle);
         }
 
         // Cleanup step
