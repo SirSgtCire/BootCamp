@@ -1,11 +1,13 @@
 package com.learning;
 
+import com.google.common.io.Files;
 import org.openqa.selenium.*;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.io.File;
 import java.time.Duration;
 import java.util.List;
 
@@ -165,11 +167,21 @@ public class Main {
         }
 
         /**
-         *  Day 6:
+         *  Day 6: screenshots of webpages
          */
-        // TODO: Begin new lessons here
+        // navigate to Reddit homepage
+        driver.get("https://www.reddit.com");
+        TakesScreenshot scrShot = ((TakesScreenshot) driver);
+        File scrShotSrc = scrShot.getScreenshotAs(OutputType.FILE);
+        File screenShot = new File("screenshot.png");
+        try {
+            Files.copy(scrShotSrc, screenShot);
+        } catch (Exception e) {
+            System.out.format("We failed to save our screenshot, here's the error:\n%s\n", e);
+        }
 
         // Cleanup step
+        driver.close();
         driver.quit();
     }
 }
