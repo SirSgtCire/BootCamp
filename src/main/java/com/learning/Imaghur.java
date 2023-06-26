@@ -14,6 +14,10 @@ public class Imaghur {
     protected static final Config properties = new Config(System.getProperty("prop.file", "src/main/resources/config.properties"));
     private static final Logger logger = LoggerFactory.getLogger(Imaghur.class);
 
+    /**
+     * run all the things here
+     * @param args
+     */
     public static void main(String[] args) {
         String inputFilePath = "src/main/resources/input.png";
         String outputFilePath = "src/main/resources/output.png";
@@ -25,6 +29,13 @@ public class Imaghur {
         }
     }
 
+    /**
+     * synthesis for our project, all main steps highlighted here
+     * @param inputFile
+     * @param outputFile
+     * @param sortDescending
+     * @throws Exception
+     */
     public static void processImage(String inputFile, String outputFile, boolean sortDescending) throws Exception {
         // Analyze input image and count colors
         logger.info("Identify how many colors we find in our input image.\n");
@@ -62,6 +73,11 @@ public class Imaghur {
         logger.info("We have completed processing of {} and have saved our work to {}.\n", inputFile, outputFile);
     }
 
+    /**
+     * take a color and reduce it to a more commonly found color as to homogenize some results
+     * @param foundColor
+     * @return
+     */
     public static Color reduceColors(Color foundColor) {
         // NOTE: ONLY uses values 0, 51, 102, 153, 204, 255 for red, green, blue
         // Create RGB values to store updated RGB values
@@ -73,6 +89,12 @@ public class Imaghur {
         return new Color(r,g,b);
     }
 
+    /**
+     * identify how many colors we find in our image
+     * @param imageInput
+     * @return
+     * @throws Exception
+     */
     public static Map<Color, Integer> analyzeColors(String imageInput) throws Exception {
         logger.info("The image we were given and will analyze: {}\n", imageInput);
         Map<Color, Integer> colorCounts = new HashMap<>();
@@ -95,6 +117,12 @@ public class Imaghur {
         return colorCounts;
     }
 
+    /**
+     * generate the image file and save our art
+     * @param imageInput
+     * @param imageOutput
+     * @throws Exception
+     */
     public static void createOutputImage(String imageInput, String imageOutput) throws Exception {
         // Identify input image variables
         BufferedImage inputImage = ImageIO.read(new File(imageInput));
@@ -113,7 +141,12 @@ public class Imaghur {
     }
 
 
-
+    /**
+     * this is how we draw blobs, by mimicing drops of gooey liquid and choosing pixels in that fashion
+     * @param threshold
+     * @param imageTemplate
+     * @return
+     */
     public static ArrayList<Point> gatherPixelNeighbors(Integer threshold, BufferedImage imageTemplate) {
         // Create list containing initial pixel and its immediate neighbors
         ArrayList<Point> pixelNeighbors = new ArrayList<>();

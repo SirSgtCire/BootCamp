@@ -180,6 +180,12 @@ public class Main {
             System.out.format("We failed to save our screenshot, here's the error:\n%s\n", e);
         }
 
+
+        /**
+         *  Day 7:
+         */
+        // TODO: continue lessons from here
+
         // Cleanup step
         driver.close();
         driver.quit();
